@@ -11,9 +11,22 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Example Routes
+// Example Route
 app.get('/', (req, res) => {
   res.send('Car Dealership Management System Backend is running');
+});
+
+// Hardcoded password for demo purposes (store securely in production)
+const PASSWORD = "octopus8Rosette.";
+
+// Endpoint to validate password
+app.post('/api/validate-password', (req, res) => {
+  const { password } = req.body;
+  if (password === PASSWORD) {
+    res.status(200).json({ success: true });
+  } else {
+    res.status(401).json({ success: false, message: 'Invalid password' });
+  }
 });
 
 // Connect to MongoDB
