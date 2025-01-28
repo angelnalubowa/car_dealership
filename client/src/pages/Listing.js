@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Button, Input, Table, Space, Dropdown, Menu } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
-import CarForm from "../pages/CarForm";
+
 
 const ListingsPage = () => {
   const [activeCategory, setActiveCategory] = useState("cars");
@@ -24,8 +24,10 @@ const ListingsPage = () => {
         console.error("Error fetching listings:", error);
       }
     };
+  
     fetchListings();
-  }, []);
+  }, []); // This ensures listings are fetched on component mount.
+  
 
   const handleDelete = async (category, id) => {
     try {

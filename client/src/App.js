@@ -7,9 +7,11 @@ import ListingsPage from "./pages/Listing";
 import Home from "./pages/Home";
 import CreateAccount from "./pages/CreateAccount";
 import Password from "./pages/Password";
+import { ListingsProvider } from "./pages/ListingContext";
 
 const App = () => {
   return (
+    <ListingsProvider>
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/signup" element={<CreateAccount />} />
@@ -19,6 +21,7 @@ const App = () => {
       <Route path="/listing" element={<ListingsPage />} />
       <Route path="/password" element={<Password />} />
     </Routes>
+    </ListingsProvider>
   );
 };
 
