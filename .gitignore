@@ -4,3 +4,4 @@ server/node_modules/
 client/node_modules/.cache/
 server/node_modules/.package-lock.json
 client/src/Images/git-lfs-windows-v3.6.1.exe
+node_modules/
