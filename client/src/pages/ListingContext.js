@@ -14,7 +14,7 @@ export const ListingsProvider = ({ children }) => {
     trips: [],
     accessories: [],
   });
-
+  
   // Function to refresh listings data
   const refreshListings = async () => {
     try {

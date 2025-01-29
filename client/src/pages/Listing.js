@@ -1,32 +1,36 @@
 import React, { useEffect, useState } from "react";
-import { Card, Button, Input, Table, Space, Dropdown, Menu } from "antd";
+import { Card, Button, Input, Table, Space } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-
+import { useNavigate } from "react-router-dom";
+import { useListings } from "./ListingContext";
 
 const ListingsPage = () => {
   const [activeCategory, setActiveCategory] = useState("cars");
   const [searchQuery, setSearchQuery] = useState("");
-  const [listings, setListings] = useState({ cars: [], carSales: [], trips: [], accessories: [] });
+  const { listings, setListings } = useListings(); // Use global listings state
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchListings = async () => {
-      try {
-        const [cars, carSales, trips, accessories] = await Promise.all([
-          fetch("/cars").then((res) => res.json()),
-          fetch("/car-sales").then((res) => res.json()),
-          fetch("/trips").then((res) => res.json()),
-          fetch("/accessories").then((res) => res.json()),
-        ]);
-        setListings({ cars, carSales, trips, accessories });
-      } catch (error) {
-        console.error("Error fetching listings:", error);
-      }
-    };
+    // Fetch listings only if they are empty
+    if (!listings.cars.length && !listings.carSales.length && !listings.trips.length && !listings.accessories.length) {
+      const fetchListings = async () => {
+        try {
+          const [cars, carSales, trips, accessories] = await Promise.all([
+            fetch("http://localhost:5000/cars").then((res) => res.json()),
+            fetch("http://localhost:5000/car-sales").then((res) => res.json()),
+            fetch("http://localhost:5000/trips").then((res) => res.json()),
+            fetch("http://localhost:5000/accessories").then((res) => res.json()),
+          ]);
+          // Update state with fetched data
+          setListings({ cars, carSales, trips, accessories });
+        } catch (error) {
+          console.error("Error fetching listings:", error);
+        }
+      };
   
-    fetchListings();
-  }, []); // This ensures listings are fetched on component mount.
+      fetchListings();
+    }
+  }, [setListings]); // Only include setListings in the dependency array
   
 
   const handleDelete = async (category, id) => {
@@ -41,6 +45,7 @@ const ListingsPage = () => {
     }
   };
 
+  // Dynamically generate columns based on data keys
   const columns = Object.keys(listings[activeCategory]?.[0] || {}).map((key) => ({
     title: key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase()),
     dataIndex: key,
@@ -48,6 +53,7 @@ const ListingsPage = () => {
     render: (text) => (typeof text === "string" ? text : JSON.stringify(text)),
   }));
 
+  // Add actions column for Edit/Delete
   columns.push({
     title: "Actions",
     key: "actions",
@@ -64,6 +70,7 @@ const ListingsPage = () => {
     ),
   });
 
+  // Filter listings based on search query
   const filteredListings = listings[activeCategory]?.filter((item) =>
     Object.values(item).some((value) =>
       value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
@@ -73,54 +80,49 @@ const ListingsPage = () => {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
+        {/* Category buttons */}
         <div className="flex space-x-4">
-          <Button
-            type={activeCategory === "cars" ? "primary" : "default"}
-            onClick={() => setActiveCategory("cars")}
-          >
-            Cars
-          </Button>
-          <Button
-            type={activeCategory === "carSales" ? "primary" : "default"}
-            onClick={() => setActiveCategory("carSales")}
-          >
-            Car Sales
-          </Button>
-          <Button
-            type={activeCategory === "trips" ? "primary" : "default"}
-            onClick={() => setActiveCategory("trips")}
-          >
-            Trips
-          </Button>
-          <Button
-            type={activeCategory === "accessories" ? "primary" : "default"}
-            onClick={() => setActiveCategory("accessories")}
-          >
-            Accessories
-          </Button>
+          {["cars", "carSales", "trips", "accessories"].map((category) => (
+            <Button
+              key={category}
+              type={activeCategory === category ? "primary" : "default"}
+              onClick={() => setActiveCategory(category)}
+            >
+              {category.replace(/([A-Z])/g, " $1").toUpperCase()}
+            </Button>
+          ))}
         </div>
+        {/* Add New Button */}
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => navigate("/add-car")}
-        className="mb-4"
         >
           Add New
         </Button>
       </div>
+      {/* Search Input */}
       <Input
-        placeholder="Search by name or other fields"
+        placeholder="Search by any field"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className="mb-4"
       />
-      <Table
-        dataSource={filteredListings}
-        columns={columns}
-        rowKey="id"
-        pagination={{ pageSize: 5 }}
-        bordered
-      />
+      {/* Listings Table */}
+      {filteredListings?.length > 0 ? (
+        <Table
+          dataSource={filteredListings}
+          columns={columns}
+          rowKey="id"
+          pagination={{ pageSize: 5 }}
+          bordered
+        />
+      ) : (
+        <div className="text-center py-4">
+          <h2>No listings available in this category.</h2>
+          <p>Try adding new items or switching categories.</p>
+        </div>
+      )}
     </div>
   );
 };
