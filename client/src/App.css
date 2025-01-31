@@ -4,7 +4,7 @@
   }
   
   .background-image {
-    background-image: url('./Images/background-image.jpg'); /* Replace with the name of your image file */
+    background-image: url('./Images/background-image.jpg'); 
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -58,8 +58,8 @@
   }
   
   .auth-link {
-    color: #fff; /* White color for the links */
-    text-decoration: none; /* Remove underline on links */
+    color: #fff; 
+    text-decoration: none; 
     padding: 10px 20px; /* Adjust padding as needed */
   }
   
@@ -111,12 +111,12 @@
   }
   
   .already-have-account a {
-    color: #007BFF; /* Blue link color */
+    color: #007BFF; 
     text-decoration: none;
   }
   
   .already-have-account a:hover {
-    text-decoration: underline; /* Underline on hover */
+    text-decoration: underline;
   }
   
   .divider {
@@ -129,7 +129,7 @@
   .divider hr {
     flex-grow: 1;
     border: none;
-    border-top: 1px solid #000; /* Horizontal line */
+    border-top: 1px solid #000; 
   }
   
   .divider span {

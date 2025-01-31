@@ -1,4 +1,4 @@
-const Sale = require('../models/Sale'); // Import the Sale model
+const Sale = require('../models/salesModel'); // Import the Sale model
 
 // Get all sales
 const getSales = async (req, res) => {

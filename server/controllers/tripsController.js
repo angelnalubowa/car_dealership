@@ -1,4 +1,4 @@
-const Trip = require('../models/Trip'); // Import the Trip model
+const Trip = require('../models/tripModel'); // Import the Trip model
 
 // Get all trips
 const getTrips = async (req, res) => {
