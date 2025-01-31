@@ -1,4 +1,4 @@
-const Trip = require('../models/tripModel'); // Import the Trip model
+const Trip = require('../models/Trip'); // Import the Trip model
 
 // Get all trips
 const getTrips = async (req, res) => {
@@ -7,6 +7,19 @@ const getTrips = async (req, res) => {
     res.status(200).json(trips);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching trips', error: error.message });
+  }
+};
+
+// Get a single trip by ID
+const getTripById = async (req, res) => {
+  try {
+    const trip = await Trip.findById(req.params.id);
+    if (!trip) {
+      return res.status(404).json({ message: 'Trip not found' });
+    }
+    res.status(200).json(trip);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching trip', error: error.message });
   }
 };
 
@@ -30,13 +43,11 @@ const addTrip = async (req, res) => {
       return res.status(400).json({ message: 'End date must be after start date' });
     }
 
-    // Create new trip
     const newTrip = new Trip({ 
       carID, startDate, endDate, price, mileage, 
       customerDetails, paymentDetails, status 
     });
 
-    // Save to database
     const savedTrip = await newTrip.save();
 
     res.status(201).json(savedTrip);
@@ -45,4 +56,34 @@ const addTrip = async (req, res) => {
   }
 };
 
-module.exports = { getTrips, addTrip };
+// Update an existing trip
+const updateTrip = async (req, res) => {
+  try {
+    const updatedTrip = await Trip.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
+    if (!updatedTrip) {
+      return res.status(404).json({ message: 'Trip not found' });
+    }
+
+    res.status(200).json(updatedTrip);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating trip', error: error.message });
+  }
+};
+
+// Delete a trip
+const deleteTrip = async (req, res) => {
+  try {
+    const deletedTrip = await Trip.findByIdAndDelete(req.params.id);
+
+    if (!deletedTrip) {
+      return res.status(404).json({ message: 'Trip not found' });
+    }
+
+    res.status(200).json({ message: 'Trip deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting trip', error: error.message });
+  }
+};
+
+module.exports = { getTrips, getTripById, addTrip, updateTrip, deleteTrip };

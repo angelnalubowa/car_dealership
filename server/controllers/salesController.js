@@ -1,4 +1,4 @@
-const Sale = require('../models/salesModel'); // Import the Sale model
+const Sale = require('../models/Sale'); // Import the Sale model
 
 // Get all sales
 const getSales = async (req, res) => {
@@ -7,6 +7,19 @@ const getSales = async (req, res) => {
     res.status(200).json(sales);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching sales', error: error.message });
+  }
+};
+
+// Get a single sale by ID
+const getSaleById = async (req, res) => {
+  try {
+    const sale = await Sale.findById(req.params.id);
+    if (!sale) {
+      return res.status(404).json({ message: 'Sale not found' });
+    }
+    res.status(200).json(sale);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching sale', error: error.message });
   }
 };
 
@@ -24,13 +37,11 @@ const addSale = async (req, res) => {
       return res.status(400).json({ message: 'All required fields must be provided' });
     }
 
-    // Create new sale
     const newSale = new Sale({ 
       customerName, phoneNumber, email, address, driversLicense, 
       carID, model, price, paymentMethod, paymentStatus, salespersonID 
     });
 
-    // Save to database
     const savedSale = await newSale.save();
 
     res.status(201).json(savedSale);
@@ -39,4 +50,34 @@ const addSale = async (req, res) => {
   }
 };
 
-module.exports = { getSales, addSale };
+// Update an existing sale
+const updateSale = async (req, res) => {
+  try {
+    const updatedSale = await Sale.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
+    if (!updatedSale) {
+      return res.status(404).json({ message: 'Sale not found' });
+    }
+
+    res.status(200).json(updatedSale);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating sale', error: error.message });
+  }
+};
+
+// Delete a sale
+const deleteSale = async (req, res) => {
+  try {
+    const deletedSale = await Sale.findByIdAndDelete(req.params.id);
+
+    if (!deletedSale) {
+      return res.status(404).json({ message: 'Sale not found' });
+    }
+
+    res.status(200).json({ message: 'Sale deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting sale', error: error.message });
+  }
+};
+
+module.exports = { getSales, getSaleById, addSale, updateSale, deleteSale };
