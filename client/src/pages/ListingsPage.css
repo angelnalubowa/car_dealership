@@ -172,6 +172,12 @@
   color: var(--muted-foreground);
   font-size: 0.875rem;
 }
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
 
 @media (min-width: 768px) {
   .listings-page-container {
