@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Card, Button, Input, Table, Space } from "antd";
+import { Button, Input, Table, Space } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useListings } from "./ListingContext";
+import "./ListingsPage.css"; // Import the CSS file
 
 const ListingsPage = () => {
   const [activeCategory, setActiveCategory] = useState("cars");
   const [searchQuery, setSearchQuery] = useState("");
-  const { listings, setListings } = useListings(); // Use global listings state
+  const { listings, setListings } = useListings();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,7 +31,7 @@ const ListingsPage = () => {
   
       fetchListings();
     }
-  }, [setListings]); // Only include setListings in the dependency array
+  }, [setListings]);
   
 
   const handleDelete = async (category, id) => {
@@ -78,14 +79,16 @@ const ListingsPage = () => {
   );
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
+    <div className="listings-page-container">
+      <div className="listings-header">
         {/* Category buttons */}
-        <div className="flex space-x-4">
+        <div className="category-buttons">
           {["cars", "carSales", "trips", "accessories"].map((category) => (
             <Button
               key={category}
-              type={activeCategory === category ? "primary" : "default"}
+              className={`category-button ${
+                activeCategory === category ? "category-button-active" : ""
+              }`}
               onClick={() => setActiveCategory(category)}
             >
               {category.replace(/([A-Z])/g, " $1").toUpperCase()}
@@ -96,17 +99,18 @@ const ListingsPage = () => {
         <Button
           type="primary"
           icon={<PlusOutlined />}
+          className="add-new-button"
           onClick={() => navigate("/add-car")}
         >
           Add New
         </Button>
       </div>
       {/* Search Input */}
-      <Input
+       <Input
         placeholder="Search by any field"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="mb-4"
+        className="search-input"
       />
       {/* Listings Table */}
       {filteredListings?.length > 0 ? (
@@ -115,12 +119,12 @@ const ListingsPage = () => {
           columns={columns}
           rowKey="id"
           pagination={{ pageSize: 5 }}
-          bordered
+           className="listings-table"
         />
       ) : (
-        <div className="text-center py-4">
-          <h2>No listings available in this category.</h2>
-          <p>Try adding new items or switching categories.</p>
+        <div className="no-listings">
+           <h2 className="no-listings-title">No listings available in this category.</h2>
+          <p className="no-listings-message">Try adding new items or switching categories.</p>
         </div>
       )}
     </div>

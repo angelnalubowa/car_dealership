@@ -1,0 +1,195 @@
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(224, 71%, 4%);
+  --primary: hsl(220, 81%, 57%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --muted: hsl(220, 14%, 96%);
+  --muted-foreground: hsl(220, 8%, 44%);
+  --border: hsl(220, 13%, 87%);
+  --ring: hsl(220, 81%, 57%);
+  --radius: 0.5rem;
+  --success: hsl(142, 71%, 45%);
+}
+
+.listings-page-container {
+  padding: 1.5rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--background);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.listings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.category-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.category-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0.5rem 1rem;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: var(--background);
+  cursor: pointer;
+}
+
+.category-button:hover {
+  background-color: hsl(220, 14%, 96%);
+  transform: translateY(-1px);
+}
+
+.category-button-active {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+  box-shadow: 0 1px 2px rgba(24, 144, 255, 0.1);
+}
+
+.category-button-active:hover {
+  background-color: hsl(220, 81%, 52%);
+}
+
+.listings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.add-new-button {
+  background-color: var(--success);
+  color: var(--primary-foreground);
+  border: none;
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-left: auto;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.add-new-button::before {
+  content: "+";
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.add-new-button:hover {
+  background-color: hsl(142, 71%, 40%);
+  transform: translateY(-1px) scale(1.05);
+}
+
+/* Hide text visually but keep it accessible */
+.add-new-button span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.search-input {
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  font-size: 0.875rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.search-input:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.listings-table {
+  background-color: var(--background);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.listings-table .ant-table-thead > tr > th {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1rem;
+}
+
+.listings-table .ant-table-tbody > tr > td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.listings-table .ant-table-tbody > tr:hover > td {
+  background-color: hsl(220, 14%, 98%);
+}
+
+.no-listings {
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.no-listings-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 0.5rem;
+}
+
+.no-listings-message {
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+@media (min-width: 768px) {
+  .listings-page-container {
+    padding: 2rem;
+  }
+  
+  .listings-header {
+    margin-bottom: 2rem;
+  }
+  
+  .category-button {
+    font-size: 0.875rem;
+    padding: 0.5rem 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .listings-page-container {
+    padding: 2.5rem;
+  }
+}

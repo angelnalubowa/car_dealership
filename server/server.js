@@ -27,9 +27,9 @@ mongoose
   .catch((err) => console.error("Failed to Connect to MongoDB:", err));
 
 // Use routes
-app.use('/api/accessories', accessoriesRoutes);
-app.use('/api/sales', salesRoutes);
-app.use('/api/trips', tripsRoutes);
+app.use('/accessories', accessoriesRoutes);
+app.use('/sales', salesRoutes);
+app.use('/trips', tripsRoutes);
 
 // Start the server
 app.listen(5000, () => { 
