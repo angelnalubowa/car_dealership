@@ -37,7 +37,7 @@ export const ListingsProvider = ({ children }) => {
     }));
   };
 
-
+  
   return (
     <ListingsContext.Provider value={{ listings, refreshListings, setListings, updateListings }}>
       {children}

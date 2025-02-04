@@ -225,11 +225,11 @@ const ListingsPage = () => {
                 visible={isModalVisible}
                 onCancel={handleCancel}
                 footer={[
-                    <div style={{display:'flex'}}>
-                    <Button key="cancel" onClick={handleCancel}>
+                    <div style={{textAlign:'left',marginInline:'15px'}} >
+                    {/* <Button key="cancel" onClick={handleCancel}>
                         Cancel
-                    </Button>,
-                    <Button key="submit" type="primary" onClick={() => form.submit()}>
+                    </Button>, */}
+                    <Button key="submit" type="primary" onClick={() => form.submit()}style={{width:'100px'}}>
                         Add
                     </Button>,
                     </div>
