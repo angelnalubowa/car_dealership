@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Card, Button, Input, Select, Form, message } from "antd";
 import { useListings } from "./ListingContext";
 import { useNavigate } from "react-router-dom";
+import "./CarManagementForms.css"; 
 
 const { Option } = Select;
 
@@ -48,7 +49,7 @@ const formSchema = {
 
 // Card container for consistent styling
 const CardContainer = ({ children }) => {
-  return <div className="p-4 bg-gray-100 rounded-lg shadow">{children}</div>;
+  return <div className="card-container">{children}</div>;
 };
 
 const CarManagementForms = () => {
@@ -92,48 +93,56 @@ const CarManagementForms = () => {
       message.error(error.message || "An error occurred. Please try again.");
     }
   };
-  
+
   const renderDynamicForm = () => {
-    return formSchema[activeForm]?.map((field) => (
-      <Form.Item
-        key={field.key}
-        name={field.key}
-        rules={[{ required: true, message: `${field.placeholder} is required` }]}
-      >
-        {field.type === "select" ? (
-          <Select
-            placeholder={field.placeholder}
-            onChange={(value) =>
-              setFormData({ ...formData, [field.key]: value })
-            }
-          >
-            {field.options.map((option) => (
-              <Option key={option} value={option}>
-                {option}
-              </Option>
-            ))}
-          </Select>
-        ) : (
-          <Input
-            type={field.type || "text"}
-            placeholder={field.placeholder}
-            onChange={(e) =>
-              setFormData({ ...formData, [field.key]: e.target.value })
-            }
-          />
-        )}
-      </Form.Item>
-    ));
+      return formSchema[activeForm]?.map((field) => (
+        <Form.Item
+          key={field.key}
+          name={field.key}
+          rules={[
+            { required: true, message: `${field.placeholder} is required` },
+          ]}
+          className="form-item"
+        >
+          {field.type === "select" ? (
+            <Select
+              placeholder={field.placeholder}
+              onChange={(value) =>
+                setFormData({ ...formData, [field.key]: value })
+              }
+              className="select-input"
+            >
+              {field.options.map((option) => (
+                <Option key={option} value={option}>
+                  {option}
+                </Option>
+              ))}
+            </Select>
+          ) : (
+            <Input
+              type={field.type || "text"}
+              placeholder={field.placeholder}
+              onChange={(e) =>
+                setFormData({ ...formData, [field.key]: e.target.value })
+              }
+                className="text-input"
+            />
+          )}
+        </Form.Item>
+      ));
   };
+    
 
   return (
-    <div className="p-4">
+    <div className="forms-container p-4">
       {/* Form Selection Buttons */}
-      <div className="flex space-x-4 mb-4">
+      <div className="form-selection-buttons">
         {Object.keys(formSchema).map((form) => (
           <Button
             key={form}
-            type={activeForm === form ? "primary" : "default"}
+            className={`form-selection-button ${
+              activeForm === form ? "form-selection-button-active" : ""
+            }`}
             onClick={() => {
               setActiveForm(form);
               setFormData({}); // Reset form data when switching
@@ -145,20 +154,21 @@ const CarManagementForms = () => {
       </div>
 
       {/* Active Form */}
-      <Card>
+      <Card className="form-card">
         <CardContainer>
-          <h2 className="text-xl font-bold mb-4">
+          <h2 className="form-title">
             {activeForm.charAt(0).toUpperCase() + activeForm.slice(1)}
           </h2>
           <Form
             layout="horizontal"
+             className="main-form"
             onFinish={() =>
               handleSubmit(`/${activeForm}`, activeForm)
             }
           >
             {renderDynamicForm()}
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
+            <Form.Item className="form-button-item">
+              <Button type="primary" htmlType="submit" className="submit-button">
                 Submit
               </Button>
             </Form.Item>
