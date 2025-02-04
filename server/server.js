@@ -1,40 +1,40 @@
 const express = require('express');
+
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 
 dotenv.config();
+require('dotenv').config();
+const mongoose = require("mongoose");
+const cors = require("cors");
+const bodyParser = require("body-parser");
 
 const app = express();
-  const port = 5000;
-// Middleware
-app.use(express.json());
+
+// Import route files
+const accessoriesRoutes = require('./routes/accessoriesRoutes');
+const salesRoutes = require('./routes/salesRoutes');
+const tripsRoutes = require('./routes/tripsRoutes');
+const carRoutes = require('./routes/carRoutes');
+
+app.use(bodyParser.json());
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// Example Route
-app.get('/', (req, res) => {
-  res.send('Car Dealership Management System Backend is running');
+// Base route
+app.get('/', async (req, res) => {
+  return res.status(200).send('Welcome to the server!');
 });
 
-// Hardcoded password for demo purposes (store securely in production)
-const PASSWORD = "octopus8Rosette.";
-
-// Endpoint to validate password
-app.post('/api/validate-password', (req, res) => {
-  const { password } = req.body;
-  if (password === PASSWORD) {
-    res.status(200).json({ success: true });
-  } else {
-    res.status(401).json({ success: false, message: 'Invalid password' });
-  }
-});
-
-// Connect to MongoDB
+// Database connection
+const url = process.env.MONGO_URI;
 mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('Error connecting to MongoDB:', err));
+  .connect(url)
+  .then(() => console.log("CONNECTED TO MONGODB!"))
+  .catch((err) => console.error("Failed to Connect to MongoDB:", err));
+
 
   app.use(bodyParser.json());
   
@@ -48,9 +48,9 @@ mongoose
   
   // Cars Available
   app.post("/cars", (req, res) => {
-    const { carID, model, price, availability } = req.body;
+    const { carID, model, price, status } = req.body;
     cars.push({ carID, model, price, availability });
-    res.status(201).send({ message: "Car added successfully", car: { carID, model, price, availability } });
+    res.status(201).send({ message: "Car added successfully", car: { carID, model, price, status } });
   });
   
   app.get("/cars", (req, res) => {
@@ -89,6 +89,7 @@ mongoose
   app.get("/accessories", (req, res) => {
     res.status(200).send(accessories);
   });
+  
   
   // Middleware
   app.use(cors());
@@ -142,8 +143,13 @@ mongoose
   });
   
 
-// Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Use routes
+app.use('/accessories', accessoriesRoutes);
+app.use('/sales', salesRoutes);
+app.use('/trips', tripsRoutes);
+app.use('/cars', carRoutes);
+
+// Start the server
+app.listen(5000, () => { 
+  console.log("App is running on port 5000"); 
 });

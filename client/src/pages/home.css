@@ -1,0 +1,132 @@
+:root {
+    --primary-color: #2563eb;       /* Modern blue */
+    --hover-color: #1d4ed8;         /* Darker blue */
+    --text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+  .body {
+    background-image: linear-gradient(
+        rgba(0, 0, 0, 0.3), 
+        rgba(0, 0, 0, 0.3)
+      ), url(../../public/background-image.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;   /* Parallax effect */
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);     /* Subtle blur effect */
+  }
+  
+  .App {
+    width: 100%;
+    max-width: 1200px;
+    padding: 2rem;
+    text-align: center;
+    display: grid;
+    place-items: center;
+    gap: 2rem;
+  }
+  
+  .title {
+    color: #fff;
+    font-weight: 900;
+    font-size: clamp(3rem, 8vw, 5rem); /* Responsive font size */
+    font-family: 'Inter', system-ui, sans-serif;
+    text-shadow: var(--text-shadow);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  span{
+    color: yellow;
+  }
+  .slogan {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: var(--text-shadow);
+    font-family: 'Inter', system-ui, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+    border-radius: 12px;
+  }
+  
+  .get-started-btn {
+    background: linear-gradient(
+      135deg, 
+      var(--primary-color) 0%, 
+      #1d4ed8 100%
+    );
+    border-radius: 50px;
+    padding: 1rem 2.5rem;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .get-started-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .get-started-btn:hover {
+    background: linear-gradient(
+      135deg, 
+      var(--hover-color) 0%, 
+      #1e3a8a 100%
+    );
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .get-started-btn:hover::after {
+    opacity: 1;
+  }
+  
+  .get-started-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Modern hover effect for all interactive elements */
+  @media (hover: hover) and (pointer: fine) {
+    .get-started-btn {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+  }
+  
+  /* Mobile optimization */
+  @media (max-width: 768px) {
+    .App {
+      padding: 1rem;
+      gap: 1.5rem;
+    }
+    
+    .title {
+      font-size: 2.5rem;
+    }
+    
+    .get-started-btn {
+      width: 100%;
+      max-width: 300px;
+      justify-content: center;
+      padding: 1rem;
+    }
+  }
