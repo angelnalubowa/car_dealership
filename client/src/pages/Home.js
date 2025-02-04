@@ -13,7 +13,7 @@ function Home() {
           <img src={image1} alt="" />
         </div> */}
         <div className="container">
-          <h1 className="title">DriveMo Management System</h1>
+          <h1 className="title">Drive<span>Mo</span> Management System</h1>
           <p className="slogan">
             The easiest and quickest way to keep records of your sales using a database.
           </p>

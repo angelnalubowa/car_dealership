@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const carSchema = new mongoose.Schema({
-  id: { 
+ Carid: { 
     type: String, 
     required: true, 
     unique: true, 
