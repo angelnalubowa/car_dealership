@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const Car = require("../models/carModel");
 
 const router = express.Router();
@@ -29,8 +30,13 @@ router.get("/", async (req, res) => {
 // Update a car
 router.put("/:id", async (req, res) => {
   try {
-    const car = await Car.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const { id } = req.params;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid car ID" });
+    }
+
+    const car = await Car.findByIdAndUpdate(id, req.body, { new: true });
     if (!car) return res.status(404).json({ message: "Car not found" });
     res.json(car);
   } catch (error) {
@@ -40,15 +46,37 @@ router.put("/:id", async (req, res) => {
 });
 
 // Delete a car
+// router.delete("/:id", async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     if (!mongoose.Types.ObjectId.isValid(id)) {
+//       return res.status(400).json({ error: "Invalid car ID" });
+//     }
+
+//     const car = await Car.findByIdAndDelete(id);
+//     if (!car) return res.status(404).json({ message: "Car not found" });
+//     res.json({ message: "Car deleted successfully" });
+//   } catch (error) {
+//     console.error("Error deleting car:", error);
+//     res.status(500).json({ error: "An error occurred while deleting the car" });
+//   }
+// });
+
+// new version
+// DELETE: Remove a document by ID
 router.delete("/:id", async (req, res) => {
-  try {
-    const car = await Car.findByIdAndDelete(req.params.id);
-    if (!car) return res.status(404).json({ message: "Car not found" });
-    res.json({ message: "Car deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting car:", error);
-    res.status(500).json({ error: "An error occurred while deleting the car" });
-  }
-});
+    const id = req.params.id;
+    try {
+      const result = await collection.deleteOne({ _id: ObjectId(id) });
+      if (result.deletedCount === 1) {
+        res.status(200).send('car deleted');
+      } else {
+        res.status(404).send('car not found');
+      }
+    } catch (err) {
+      res.status(500).send('Error deleting car');
+    }
+  });
 
 module.exports = router;

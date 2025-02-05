@@ -64,7 +64,7 @@ const ListingsPage = () => {
       try {
         const [cars, carSales, trips, accessories] = await Promise.all([
           fetch("http://localhost:5000/cars").then((res) => res.json()),
-          fetch("http://localhost:5000/sales").then((res) => res.json()),
+          fetch("http://localhost:5000/carSales").then((res) => res.json()),
           fetch("http://localhost:5000/trips").then((res) => res.json()),
           fetch("http://localhost:5000/accessories").then((res) => res.json()),
         ]);
@@ -82,17 +82,23 @@ const ListingsPage = () => {
 
   const handleDelete = async (category, id) => {
     try {
-      await fetch(`http://localhost:5000/${category}/${id}`, {
+      const response = await fetch(`http://localhost:5000/${category}/${id}`, {
         method: "DELETE",
       });
-      setListings((prev) => ({
-        ...prev,
-        [category]: prev[category].filter((item) => item.id !== id),
-      }));
-      message.success("Item deleted successfully!");
+  
+      if (response.ok) {
+        setListings((prev) => ({
+          ...prev,
+          [category]: prev[category].filter((item) => item._id !== id),
+        }));
+        message.success("Item deleted successfully!");
+      } else {
+        console.error("Failed to delete item:", await response.text());
+        message.error("Failed to delete item. Please try again.");
+      }
     } catch (error) {
       console.error("Error deleting item:", error);
-      message.error("Failed to delete item. Please try again.");
+      message.error("Error deleting item. Please try again.");
     }
   };
 
@@ -118,7 +124,7 @@ const ListingsPage = () => {
             type="link"
             danger
             icon={<DeleteOutlined />}
-            onClick={() => handleDelete(activeCategory, record.id)}
+            onClick={() => handleDelete(activeCategory, record._id)}
           />
         </Space>
       ),
