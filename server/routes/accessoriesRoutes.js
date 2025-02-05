@@ -1,22 +1,12 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { 
-  getAccessories, 
-  getAccessoryById, 
-  addAccessory, 
-  updateAccessory, 
-  deleteAccessory 
-} = require('../controllers/accessoriesController');
+const accessoryController = require("../controllers/accessoriesController");
 
-// GET all accessories & POST new accessory
-router.route('/')
-  .get(getAccessories)
-  .post(addAccessory);
-
-// GET single accessory, UPDATE, and DELETE
-router.route('/:id')
-  .get(getAccessoryById)
-  .put(updateAccessory)
-  .delete(deleteAccessory);
+// Define routes
+router.post("/", accessoryController.createAccessory); // Create an accessory
+router.get("/", accessoryController.getAccessories); // Get all accessories
+router.get("/:id", accessoryController.getAccessoryById); // Get one accessory by ID
+router.put("/:id", accessoryController.updateAccessory); // Update an accessory
+router.delete("/:id", accessoryController.deleteAccessory); // Delete an accessory
 
 module.exports = router;

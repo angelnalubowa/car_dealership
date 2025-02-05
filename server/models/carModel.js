@@ -1,26 +1,15 @@
 const mongoose = require("mongoose");
 
-const carSchema = new mongoose.Schema({
- Carid: { 
-    type: String, 
-    required: true, 
-    unique: true, 
-    index: true 
+const carSchema = new mongoose.Schema(
+  {
+    carId: { type: String, required: true},
+    make: { type: String, required: true },
+    model: { type: String, required: true },
+    year: { type: Number, required: true },
+    price: { type: Number, required: true },
+    status: { type: String, enum: ["Available", "Sold", "Reserved"], required: true },
   },
-  model: { 
-    type: String, 
-    required: true, 
-    trim: true },
-  price: { 
-    type: Number, 
-    required: true, 
-    min: 0 },
-  status: { 
-    type: String, 
-    enum: ["Available", "Sold", "Reserved"], 
-    default: "Available",
-    required: true 
-  }
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("Car", carSchema);

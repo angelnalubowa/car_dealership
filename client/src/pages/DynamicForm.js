@@ -1,77 +1,42 @@
 import React from "react";
-import './DynamicForm.css';
+import { Form, Input, Select } from "antd";
 
-const DynamicForm = ({ schema, onFinish }) => {
-  // Handle form submission by converting FormData into an object
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const values = {};
-    for (let [key, value] of formData.entries()) {
-      values[key] = value;
-    }
-    onFinish(values);
-  };
+const { Option } = Select;
 
-  // Render each form field based on the schema
-  const renderField = (item) => {
-    const { key, placeholder, type, options } = item;
-    const label = key
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (str) => str.toUpperCase());
-
-    switch (type) {
-      case "select":
-        return (
-          <div className="form-item" key={key}>
-            <label htmlFor={key}>{label}</label>
-            <select id={key} name={key} required>
-              <option value="">Select {key.toLowerCase()}</option>
-              {options &&
-                options.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-            </select>
-          </div>
-        );
-      case "date":
-        return (
-          <div className="form-item" key={key}>
-            <label htmlFor={key}>{label}</label>
-            <input
-              type="date"
-              id={key}
-              name={key}
-              placeholder={`Select ${key.toLowerCase()}`}
-              required
-            />
-          </div>
-        );
-      default:
-        return (
-          <div className="form-item" key={key}>
-            <label htmlFor={key}>{label}</label>
-            <input
-              type="text"
-              id={key}
-              name={key}
-              placeholder={placeholder || `Enter ${key.toLowerCase()}`}
-              required
-            />
-          </div>
-        );
-    }
-  };
-
+const DynamicForm = ({ schema, form, onFinish }) => {
   return (
-    <form className="dynamic-form-container" onSubmit={handleSubmit}>
-      {schema.map(renderField)}
-      <div className="form-item">
-        {/* <button type="submit">Submit</button> */}
-      </div>
-    </form>
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={onFinish}
+      autoComplete="off"
+    >
+      {schema?.map((field) => (
+        <Form.Item
+          key={field.key}
+          label={field.placeholder}
+          name={field.key}
+          rules={[
+            {
+              required: true,
+              message: `Please input the ${field.placeholder}!`,
+            },
+          ]}
+        >
+          {field.type === "select" ? (
+            <Select placeholder={`Select ${field.placeholder}`}>
+              {field.options.map((option) => (
+                <Option key={option} value={option}>
+                  {option}
+                </Option>
+              ))}
+            </Select>
+          ) : (
+            <Input placeholder={field.placeholder} />
+          )}
+        </Form.Item>
+      ))}
+    </Form>
   );
 };
 

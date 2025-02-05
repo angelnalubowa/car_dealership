@@ -20,7 +20,7 @@ export const ListingsProvider = ({ children }) => {
     try {
       const [cars, carSales, trips, accessories] = await Promise.all([
         fetch("/cars").then((res) => res.json()),
-        fetch("/car-sales").then((res) => res.json()),
+        fetch("/sales").then((res) => res.json()),
         fetch("/trips").then((res) => res.json()),
         fetch("/accessories").then((res) => res.json()),
       ]);
