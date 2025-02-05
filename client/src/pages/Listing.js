@@ -24,7 +24,7 @@ const formSchema = {
     { key: "carId", placeholder: "Car ID" },
     { key: "model", placeholder: "Model" },
     { key: "price", placeholder: "Price" },
-    { key: "paymentMethod", type: "select", options: ["cash", "credit"] },
+    { key: "paymentMethod", type: "select", options: ["Cash", "Credit Card", "Mobile Money", "Bank Transfer"] },
     { key: "paymentStatus", type: "select", options: ["paid", "pending"] },
     { key: "salespersonId", placeholder: "Salesperson ID" },
   ],

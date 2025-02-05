@@ -9,8 +9,8 @@ const app = express();
 
 // Import route files
 const accessoriesRoutes = require('./controllers/accessoriesController');
-const salesRoutes = require('./routes/salesRoutes');
-const tripsRoutes = require('./routes/tripsRoutes');
+const salesRoutes = require('./controllers/salesController');
+const tripsRoutes = require('./controllers/tripsController');
 const carRoutes = require('./controllers/carController');
 
 app.use(bodyParser.json());
@@ -35,7 +35,7 @@ mongoose
 
 // Use routes
 app.use('/accessories', accessoriesRoutes);
-app.use('/sales', salesRoutes);
+app.use('/carSales', salesRoutes);
 app.use('/trips', tripsRoutes);
 app.use('/cars', carRoutes);
 

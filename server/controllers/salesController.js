@@ -1,83 +1,54 @@
-const Sale = require('../models/salesModel'); // Import the Sale model
+const express = require("express");
+const CarSales = require("../models/salesModel");
 
-// Get all sales
-const getSales = async (req, res) => {
+const router = express.Router();
+
+// Create a new car sale
+router.post("/", async (req, res) => {
   try {
-    const sales = await Sale.find();
-    res.status(200).json(sales);
+    const sale = new CarSales(req.body);
+    await sale.save();
+    res.status(201).json(sale);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching sales', error: error.message });
+    console.error("Error creating car sale:", error);
+    res.status(500).json({ error: "An error occurred while creating the car sale" });
   }
-};
+});
 
-// Get a single sale by ID
-const getSaleById = async (req, res) => {
+// Get all car sales
+router.get("/", async (req, res) => {
   try {
-    const sale = await Sale.findById(req.params.id);
-    if (!sale) {
-      return res.status(404).json({ message: 'Sale not found' });
-    }
-    res.status(200).json(sale);
+    const sales = await CarSales.find();
+    res.json(sales);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching sale', error: error.message });
+    console.error("Error fetching car sales:", error);
+    res.status(500).json({ error: "An error occurred while fetching car sales" });
   }
-};
+});
 
-// Add a new sale
-const addSale = async (req, res) => {
+// Update a car sale
+router.put("/:id", async (req, res) => {
   try {
-    const { 
-      customerName, phoneNumber, email, address, driversLicense, 
-      carID, model, price, paymentMethod, paymentStatus, salespersonID 
-    } = req.body;
+    const sale = await CarSales.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
-    // Validate required fields
-    if (!customerName || !phoneNumber || !email || !address || !driversLicense || 
-        !carID || !model || !price || !paymentMethod || !salespersonID) {
-      return res.status(400).json({ message: 'All required fields must be provided' });
-    }
-
-    const newSale = new Sale({ 
-      customerName, phoneNumber, email, address, driversLicense, 
-      carID, model, price, paymentMethod, paymentStatus, salespersonID 
-    });
-
-    const savedSale = await newSale.save();
-
-    res.status(201).json(savedSale);
+    if (!sale) return res.status(404).json({ message: "Car sale not found" });
+    res.json(sale);
   } catch (error) {
-    res.status(500).json({ message: 'Error adding sale', error: error.message });
+    console.error("Error updating car sale:", error);
+    res.status(500).json({ error: "An error occurred while updating the car sale" });
   }
-};
+});
 
-// Update an existing sale
-const updateSale = async (req, res) => {
+// Delete a car sale
+router.delete("/:id", async (req, res) => {
   try {
-    const updatedSale = await Sale.findByIdAndUpdate(req.params.id, req.body, { new: true });
-
-    if (!updatedSale) {
-      return res.status(404).json({ message: 'Sale not found' });
-    }
-
-    res.status(200).json(updatedSale);
+    const sale = await CarSales.findByIdAndDelete(req.params.id);
+    if (!sale) return res.status(404).json({ message: "Car sale not found" });
+    res.json({ message: "Car sale deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating sale', error: error.message });
+    console.error("Error deleting car sale:", error);
+    res.status(500).json({ error: "An error occurred while deleting the car sale" });
   }
-};
+});
 
-// Delete a sale
-const deleteSale = async (req, res) => {
-  try {
-    const deletedSale = await Sale.findByIdAndDelete(req.params.id);
-
-    if (!deletedSale) {
-      return res.status(404).json({ message: 'Sale not found' });
-    }
-
-    res.status(200).json({ message: 'Sale deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting sale', error: error.message });
-  }
-};
-
-module.exports = { getSales, getSaleById, addSale, updateSale, deleteSale };
+module.exports = router;
