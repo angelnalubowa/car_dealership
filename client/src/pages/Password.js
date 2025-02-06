@@ -24,7 +24,7 @@ function Password() {
 
   return (
     <div className="password-page">
-      <div className="container">
+      <div className="cardcontainer">
         <h2>Enter your password</h2>
 
         {/* Profile Section */}
