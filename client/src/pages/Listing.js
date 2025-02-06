@@ -30,8 +30,8 @@ const formSchema = {
   ],
   trips: [
     { key: "carId", placeholder: "Car ID" },
-    { key: "startDate", placeholder: "Start Date", type: "date" },
-    { key: "finishDate", placeholder: "Finish Date", type: "date" },
+    { key: "startDate", placeholder: "Start Date" },
+    { key: "finishDate", placeholder: "Finish Date" },
     { key: "price", placeholder: "Price" },
     { key: "mileage", placeholder: "Mileage" },
     { key: "customerName", placeholder: "Customer Name" },
