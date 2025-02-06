@@ -5,13 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { useListings } from "./ListingContext";
 import "./ListingsPage.css";
 import DynamicForm from "./DynamicForm";
+import moment from 'moment';
 
 const formSchema = {
   cars: [
     { key: "carId", placeholder: "Car ID" },
     { key: "make", placeholder: "Make" },
     { key: "model", placeholder: "Model" },
-    { key: "year", placeholder: "Year", type: "number" }, // Added year field
+    { key: "year", placeholder: "Year", type: "number" },
     { key: "price", placeholder: "Price" },
     { key: "status", type: "select", options: ["Available", "Sold", "Reserved"] },
   ],
@@ -30,8 +31,8 @@ const formSchema = {
   ],
   trips: [
     { key: "carId", placeholder: "Car ID" },
-    { key: "startDate", placeholder: "Start Date" },
-    { key: "finishDate", placeholder: "Finish Date" },
+    { key: "startDate", placeholder: "Start Date", type: "date" },
+    { key: "finishDate", placeholder: "Finish Date", type: "date" },
     { key: "price", placeholder: "Price" },
     { key: "mileage", placeholder: "Mileage" },
     { key: "customerName", placeholder: "Customer Name" },
@@ -48,12 +49,22 @@ const formSchema = {
     { key: "paymentStatus", type: "select", options: ["paid", "pending"] },
   ],
 };
+const formatPrice = (price) => {
+  if (typeof price === "number") {
+    return price.toLocaleString();
+  } else if (typeof price === "string") {
+    const numericPrice = parseFloat(price.replace(/,/g, ""));
+    return numericPrice.toLocaleString();
+  }
+  return price;
+};
 
 const ListingsPage = () => {
   const [activeCategory, setActiveCategory] = useState("cars");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
   const [form] = Form.useForm();
   const { listings, setListings } = useListings();
   const navigate = useNavigate();
@@ -85,7 +96,7 @@ const ListingsPage = () => {
       const response = await fetch(`http://localhost:5000/${category}/${id}`, {
         method: "DELETE",
       });
-  
+
       if (response.ok) {
         setListings((prev) => ({
           ...prev,
@@ -109,8 +120,23 @@ const ListingsPage = () => {
       title: key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase()),
       dataIndex: key,
       key: key,
-      render: (text) => (typeof text === "string" ? text : JSON.stringify(text)),
-    })).concat({ //Concat appends actions at the end
+      render: (text) => {
+        if (key === "price") {
+          return formatPrice(text);
+        }
+
+        if (key === "startDate" || key === "finishDate") {
+          if (text) {
+            const date = new Date(text);
+            return `${date.getDate().toString().padStart(2, "0")}-${(date.getMonth() + 1)
+              .toString()
+              .padStart(2, "0")}-${date.getFullYear()}`;
+          }
+          return "-";
+        }
+        return typeof text === "string" ? text : JSON.stringify(text);
+      },
+    })).concat({
       title: "Actions",
       key: "actions",
       render: (_, record) => (
@@ -118,7 +144,11 @@ const ListingsPage = () => {
           <Button
             type="link"
             icon={<EditOutlined />}
-            onClick={() => console.log("Edit", record.id)}
+            onClick={() => {
+              setEditingItem(record);
+              form.setFieldsValue(record);
+              setIsModalVisible(true);
+            }}
           />
           <Button
             type="link"
@@ -137,9 +167,10 @@ const ListingsPage = () => {
         value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
       )
     )
-    : []; // Fallback to an empty array
+    : [];
 
   const showModal = () => {
+    setEditingItem(null);
     setIsModalVisible(true);
     form.resetFields();
   };
@@ -149,6 +180,20 @@ const ListingsPage = () => {
   };
 
   const handleAdd = async (values) => {
+    if (values.price) {
+      values.price = parseFloat(values.price.replace(/,/g, ''));
+    }
+
+    if (values.startDate) {
+      values.startDate = moment(values.startDate).isValid()
+        ? moment(values.startDate).format("DD-MM-YYYY")
+        : null;
+    }
+    if (values.finishDate) {
+      values.finishDate = moment(values.finishDate).isValid()
+        ? moment(values.finishDate).format("DD-MM-YYYY")
+        : null;
+    }
     try {
       const response = await fetch(`http://localhost:5000/${activeCategory}`, {
         method: "POST",
@@ -164,15 +209,56 @@ const ListingsPage = () => {
           ...prev,
           [activeCategory]: [...(prev[activeCategory] || []), newItem],
         }));
-        setIsModalVisible(false); // Close the modal
-        message.success("Item added successfully!"); // Success message
+        setIsModalVisible(false);
+        message.success("Item added successfully!");
       } else {
         console.error("Failed to add item:", await response.text());
-        message.error("Failed to add item. Please try again."); // Error message
+        message.error("Failed to add item. Please try again.");
       }
     } catch (error) {
       console.error("Error adding item:", error);
-      message.error("Error adding item. Please try again."); // Error message
+      message.error("Error adding item. Please try again.");
+    }
+  };
+
+  const handleEdit = async (values) => {
+    if (values.startDate) {
+      values.startDate = moment(values.startDate).isValid()
+        ? moment(values.startDate).format("DD-MM-YYYY")
+        : null;
+    }
+    if (values.finishDate) {
+      values.finishDate = moment(values.finishDate).isValid()
+        ? moment(values.finishDate).format("DD-MM-YYYY")
+        : null;
+    }
+  
+    try {
+      const response = await fetch(`http://localhost:5000/${activeCategory}/${editingItem._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (response.ok) {
+        const updatedItem = await response.json();
+        setListings((prev) => ({
+          ...prev,
+          [activeCategory]: prev[activeCategory].map((item) =>
+            item._id === updatedItem._id ? updatedItem : item
+          ),
+        }));
+        setIsModalVisible(false);
+        message.success("Item updated successfully!");
+      } else {
+        console.error("Failed to update item:", await response.text());
+        message.error("Failed to update item. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error updating item:", error);
+      message.error("Error updating item. Please try again.");
     }
   };
 
@@ -183,8 +269,7 @@ const ListingsPage = () => {
           {["cars", "carSales", "trips", "accessories"].map((category) => (
             <Button
               key={category}
-              className={`category-button ${activeCategory === category ? "category-button-active" : ""
-                }`}
+              className={`category-button ${activeCategory === category ? "category-button-active" : ""}`}
               onClick={() => setActiveCategory(category)}
             >
               {category.replace(/([A-Z])/g, " $1").toUpperCase()}
@@ -213,7 +298,7 @@ const ListingsPage = () => {
       ) : filteredListings.length > 0 ? (
         <Table
           dataSource={filteredListings}
-          columns={columns()} //Call it as function
+          columns={columns()}
           rowKey="id"
           pagination={{ pageSize: 5 }}
           className="listings-table"
@@ -229,16 +314,16 @@ const ListingsPage = () => {
         </div>
       )}
       <Modal
-        title={`Add New ${activeCategory.replace(/([A-Z])/g, " $1").toUpperCase()}`}
+        title={editingItem ? `Edit ${activeCategory.replace(/([A-Z])/g, " $1").toUpperCase()}` : `Add New ${activeCategory.replace(/([A-Z])/g, " $1").toUpperCase()}`}
         open={isModalVisible}
         onCancel={handleCancel}
         footer={[
           <Button key="submit" type="primary" onClick={() => form.submit()}>
-            Add
+            {editingItem ? "Update" : "Add"}
           </Button>,
         ]}
       >
-        <DynamicForm schema={formSchema[activeCategory]} form={form} onFinish={handleAdd} />
+        <DynamicForm schema={formSchema[activeCategory]} form={form} onFinish={editingItem ? handleEdit : handleAdd} />
       </Modal>
     </div>
   );

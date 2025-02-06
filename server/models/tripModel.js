@@ -6,12 +6,12 @@ const tripSchema = new mongoose.Schema(
     startDate: { 
       type: Date, 
       required: true,
-      set: (value) => formatDate(value) 
+      set: (value) => parseDate(value) 
     },
     finishDate: { 
       type: Date, 
       required: true,
-      set: (value) => formatDate(value) 
+      set: (value) => parseDate(value) 
     },
     price: { type: Number, required: true },
     mileage: { type: Number, required: true },
@@ -23,11 +23,11 @@ const tripSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Function to format date
-const formatDate = (value) => {
+// Function to properly parse dd-mm-yyyy format into a Date object
+const parseDate = (value) => {
   if (typeof value === "string" && value.includes("-")) {
-    const [day, month, year] = value.split("-");
-    return new Date(`${year}-${month}-${day}`); // Convert "27-01-2025" → "2025-01-27"
+    const [day, month, year] = value.split("-").map(Number);
+    return new Date(year, month - 1, day); // Month is zero-based in JS Date
   }
   return value;
 };
