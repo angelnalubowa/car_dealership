@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Button, Input, Table, Space, Spin, Modal, Form, message } from "antd";
-import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, PlusOutlined, ShareAltOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useListings } from "./ListingContext";
 import "./ListingsPage.css";
 import DynamicForm from "./DynamicForm";
 import moment from 'moment';
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const formSchema = {
   cars: [
@@ -57,6 +59,29 @@ const formatPrice = (price) => {
     return numericPrice.toLocaleString();
   }
   return price;
+};
+const generatePDF = (listings, activeCategory) => {
+  if (!listings || !listings[activeCategory]?.length) {
+    message.warning("No data available to export.");
+    return;
+  }
+
+  const doc = new jsPDF();
+  doc.text(`${activeCategory.toUpperCase()} Listings`, 14, 10);
+
+  const schema = formSchema[activeCategory];
+  const tableHeaders = schema.map((field) => field.placeholder || field.key);
+  const tableData = listings[activeCategory].map((item) =>
+    schema.map((field) => item[field.key] || "-")
+  );
+
+  doc.autoTable({
+    head: [tableHeaders],
+    body: tableData,
+    startY: 20,
+  });
+
+  doc.save(`${activeCategory}-listings.pdf`);
 };
 
 const ListingsPage = () => {
@@ -276,6 +301,7 @@ const ListingsPage = () => {
             </Button>
           ))}
         </div>
+        <Space>
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -284,6 +310,14 @@ const ListingsPage = () => {
         >
           Add New
         </Button>
+        <Button
+        type="default"
+        icon={<ShareAltOutlined />}
+        className="share-button"
+        onClick={() => generatePDF(listings, activeCategory)}      >
+        Share
+      </Button>
+      </Space>
       </div>
       <Input
         placeholder="Search by any field"
